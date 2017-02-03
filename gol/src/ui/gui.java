@@ -25,7 +25,7 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 	 * Creates new form gui
 	 */
 	// JPanel pane = new JPanel();
-	protected int x_len = 10, y_len = 7;
+	protected int x_len = 50, y_len = 40;
 	private gomb[][] table_buttons;
 	private int[][] table;
 	private final int button_sidelenght = 18;
