@@ -2,25 +2,25 @@ package engine;
 
 /**
  *
- * @author White Mage
+ * @author WMage
  */
 public class generation {
 	private int[][] gen;
 	private int[][] maybe_reborn;
 
-	public generation(int[][] generation) throws Exception
-	{
-		if((!(generation.length>0))||(!(generation[0].length>0)))
-		{
+	public generation(int[][] generation) throws Exception {
+		if ((!(generation.length > 0)) || (!(generation[0].length > 0))) {
 			throw new Exception("Invalid generation data");
 		}
 		this.gen = generation;
 	}
+
 	public int[][] next_generation() {
 		this.maybe_reborn = new int[this.gen.length][this.gen[0].length];
 		this.mark_die();
 		this.mark_reborn();
-		return gen;
+		this.execute_marks();
+		return this.gen;
 	}
 
 	/*
@@ -28,6 +28,8 @@ public class generation {
 	 * checked does there any new cell reborned
 	 */
 	private int get_nb_count(int x, int y, int x_max, int y_max) {
+		boolean count_itself = (this.gen[x][y] == 1);
+
 		int x_start = x - 1;
 		if (x_start < 0) {
 			x_start = 0;
@@ -46,19 +48,18 @@ public class generation {
 		}
 
 		int count = 0;
-		for (x = x_start; x < x_end; x++) {
-			for (y = y_start; y < y_end; y++) {
+		for (x = x_start; x <= x_end; x++) {
+			for (y = y_start; y <= y_end; y++) {
 				if (this.gen[x][y] > 0) {
 					count++;
-				}
-				else
-				{
-					this.maybe_reborn[x][y] = 1;
+				} else {
+					if (count_itself) {
+						this.maybe_reborn[x][y] = 1;
+					}
 				}
 			}
 		}
-
-		return count;
+		return (count_itself) ? (count - 1) : (count);
 	}
 
 	private void mark_die() {
@@ -67,16 +68,48 @@ public class generation {
 		for (x = 0; x < x_max; x++) {
 			y_max = this.gen[x].length;
 			for (y = 0; y < y_max; y++) {
-				int nb_count = this.get_nb_count(x, y, x_max, y_max);
-				if ((nb_count > 3) || (nb_count < 2)) {
-					this.gen[x][y] = 10;
+				if (this.gen[x][y] == 1) {
+					int nb_count = this.get_nb_count(x, y, x_max, y_max);
+					if ((nb_count > 3) || (nb_count < 2)) {
+						this.gen[x][y] = 10;
+					}
 				}
 			}
 		}
 	}
 
 	private void mark_reborn() {
+		int x, y, x_max, y_max;
+		x_max = this.gen.length - 1;
+		for (x = 0; x < x_max; x++) {
+			y_max = this.gen[x].length - 1;
+			for (y = 0; y < y_max; y++) {
+				if (this.maybe_reborn[x][y] == 1) {
+					int nb_count = this.get_nb_count(x, y, x_max, y_max);
+					if (nb_count == 3) {
+						this.gen[x][y] = -20;
+					}
+				}
+			}
+		}
+	}
 
+	private void execute_marks() {
+		int x, y;
+		for (x = 0; x < this.gen.length; x++) {
+			for (y = 0; y < this.gen[x].length; y++) {
+				switch (this.gen[x][y]) {
+					case 10:
+						// die
+						this.gen[x][y] = 0;
+						break;
+					case -20:
+						// born
+						this.gen[x][y] = 1;
+						break;
+				}
+			}
+		}
 	}
 
 }

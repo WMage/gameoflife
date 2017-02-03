@@ -14,7 +14,7 @@ import javax.swing.*;
 
 /**
  *
- * @author White Mage
+ * @author WMage
  */
 public class gui extends javax.swing.JFrame implements ActionListener {
 
@@ -23,12 +23,13 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 	 * Creates new form gui
 	 */
 	// JPanel pane = new JPanel();
-	protected int x_len, y_len;
+	protected int x_len = 3, y_len = 2;
 	private gomb[][] table_buttons;
 	private int[][] table;
-	private final int button_sidelenght = 40;
+	private final int button_sidelenght = 18;
 	private final int top_base = 0, left_alap = 0;
 	private int _left = left_alap, _top = top_base;
+	private boolean progress;
 
 	/*
 	 * List, Map, Set
@@ -80,12 +81,17 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 	}
 
 	private void play() {
+		this.progress = true;
 		try {
-			generation gen = new generation(this.table);
-			this.table = gen.next_generation();
-			this.repaint_table();
+			//ciklussal elszáll
+			//do {
+				generation gen = new generation(this.table);
+				this.table = gen.next_generation();
+				this.repaint_table();
+				//Thread.sleep(100);
+			//} while (progress);
 		} catch (Exception e) {
-			this.msg(e.getMessage());
+			msg(e.getMessage());
 		}
 	}
 
@@ -94,6 +100,7 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 		for (x = 0; x < x_len; x++) {
 			for (y = 0; y < y_len; y++) {
 				this.table_buttons[x][y].state(this.table[x][y]);
+				this.table[x][y] = this.table_buttons[x][y].state();
 			}
 		}
 	}
@@ -106,6 +113,14 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 			}
 			top();
 			_left = left_alap;
+		}
+
+		for (gomb[] tabla_gombok1 : table_buttons) {
+			for (gomb tabla_gombok11 : tabla_gombok1) {
+				tabla_gombok11.addActionListener(this);
+				tabla_gombok11.requestFocus();
+				tabla_gombok11.repaint();
+			}
 		}
 	}
 
@@ -123,20 +138,21 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 		if (table_buttons[x][y] == null) {
 			gomb pressme = new gomb(state, x, y);
 			// pressme.setMnemonic('P'); // associate hotkey to button
-			pressme.addActionListener(this); // register button listener
+			//pressme.addActionListener(this); // register button listener
 			pressme.setMargin(new Insets(0, 0, 0, 0));
 			pressme.setBounds(left(), _top, button_sidelenght, button_sidelenght);
 			pane.add(pressme);
 			pressme.setVisible(true);
-			pressme.requestFocus();
+			//pressme.requestFocus();
 			table_buttons[x][y] = pressme;
 			pressme.setEnabled(true);
-			pressme.repaint();
+			//pressme.repaint();
 		}
 		// requestFocus();
 	}
 
 	private void reset_table_data() {
+		this.progress = false;
 		if (table_buttons != null) {
 			for (gomb[] tabla_gombok1 : table_buttons) {
 				for (gomb tabla_gombok11 : tabla_gombok1) {
@@ -146,8 +162,6 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 			}
 			table_buttons = null;
 		}
-		x_len = 10;
-		y_len = 10;
 		if (y_len < x_len) {
 			int v = x_len;
 			x_len = y_len;
@@ -164,7 +178,7 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 		fill_buttons();
 	}
 
-	private void msg(String t) {
+	public static void msg(String t) {
 		JOptionPane.showMessageDialog(null, t, "Message Dialog", JOptionPane.PLAIN_MESSAGE);
 	}
 
@@ -198,7 +212,7 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 		paneLayout.setVerticalGroup(paneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0,
 				232, Short.MAX_VALUE));
 
-		jMenu1.setText("Start");
+		jMenu1.setText("Start / Step");
 		jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				jMenu1MouseClicked(evt);

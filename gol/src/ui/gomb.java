@@ -10,7 +10,7 @@ import javax.swing.JButton;
 
 /**
  *
- * @author White Mage
+ * @author WMage
  */
 public final class gomb extends JButton {
 	private static final long serialVersionUID = 1L;
@@ -46,6 +46,8 @@ public final class gomb extends JButton {
 			// this.setBackground(Color.red);
 			this.setBackground(Color.white);
 		}
+		//this.repaint();
+		//this.revalidate();
 		this.state = s;
 	}
 
