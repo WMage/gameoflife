@@ -10,6 +10,8 @@ import java.awt.event.*;
 import engine.*;
 //import java.util.Random;
 import javax.swing.*;
+
+import org.json.JSONException;
 //import javax.swing.border.Border;
 
 /**
@@ -23,12 +25,13 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 	 * Creates new form gui
 	 */
 	// JPanel pane = new JPanel();
-	protected int x_len = 3, y_len = 2;
+	protected int x_len = 10, y_len = 7;
 	private gomb[][] table_buttons;
 	private int[][] table;
 	private final int button_sidelenght = 18;
 	private final int top_base = 0, left_alap = 0;
 	private int _left = left_alap, _top = top_base;
+	@SuppressWarnings("unused")
 	private boolean progress;
 
 	/*
@@ -83,13 +86,13 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 	private void play() {
 		this.progress = true;
 		try {
-			//ciklussal elszáll
-			//do {
-				generation gen = new generation(this.table);
-				this.table = gen.next_generation();
-				this.repaint_table();
-				//Thread.sleep(100);
-			//} while (progress);
+			// ciklussal elszáll
+			// do {
+			generation gen = new generation(this.table);
+			this.table = gen.next_generation();
+			this.repaint_table();
+			// Thread.sleep(100);
+			// } while (progress);
 		} catch (Exception e) {
 			msg(e.getMessage());
 		}
@@ -138,15 +141,15 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 		if (table_buttons[x][y] == null) {
 			gomb pressme = new gomb(state, x, y);
 			// pressme.setMnemonic('P'); // associate hotkey to button
-			//pressme.addActionListener(this); // register button listener
+			// pressme.addActionListener(this); // register button listener
 			pressme.setMargin(new Insets(0, 0, 0, 0));
 			pressme.setBounds(left(), _top, button_sidelenght, button_sidelenght);
 			pane.add(pressme);
 			pressme.setVisible(true);
-			//pressme.requestFocus();
+			// pressme.requestFocus();
 			table_buttons[x][y] = pressme;
 			pressme.setEnabled(true);
-			//pressme.repaint();
+			// pressme.repaint();
 		}
 		// requestFocus();
 	}
@@ -178,6 +181,35 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 		fill_buttons();
 	}
 
+	private void save_table() {
+		String msg = "siker";
+		try {
+			boolean res = api.communicator.save_object("asd",
+					(api.jsonArray.generation_to_jsonstring(this.table)));
+			if (!res) {
+				msg = "siekrtelen";
+			}
+		} catch (JSONException e) {
+			msg("hiba");
+			msg(e.getMessage());
+			e.printStackTrace();
+		}
+		msg(msg);
+	}
+
+	private void load_table(String name) {
+		try {
+			this.table = api.jsonArray.jsonstring_to_generation(api.communicator.get_saved_object(name));
+			//TODO: a betöltött alakzat független legyen az aktuális táblamérettöl
+			this.repaint();
+			//TODO: betölti az adatokat, de valamiért grafikusan nem jeleniti meg amit a this.table átvett
+			//értékeit akkor sem az eredeti tábla megegyezett az ujjal
+		} catch (JSONException e) {
+			msg(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
 	public static void msg(String t) {
 		JOptionPane.showMessageDialog(null, t, "Message Dialog", JOptionPane.PLAIN_MESSAGE);
 	}
@@ -196,6 +228,10 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 		jMenuBar1 = new javax.swing.JMenuBar();
 		jMenu1 = new javax.swing.JMenu();
 		jMenu2 = new javax.swing.JMenu();
+		jMenu3 = new javax.swing.JMenu();
+		jMenu4 = new javax.swing.JMenu();
+		jMenu5 = new javax.swing.JMenu();
+		jMenu6 = new javax.swing.JMenu();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setBounds(new java.awt.Rectangle(0, 0, 0, 0));
@@ -228,6 +264,38 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 		});
 		jMenuBar1.add(jMenu2);
 
+		jMenu5.setText("LIF");
+		jMenu5.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				jMenu5MouseClicked(evt);
+			}
+		});
+		jMenuBar1.add(jMenu5);
+
+		jMenu3.setText("Glider");
+		jMenu3.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				jMenu3MouseClicked(evt);
+			}
+		});
+		jMenuBar1.add(jMenu3);
+
+		jMenu4.setText("LWSS");
+		jMenu4.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				jMenu4MouseClicked(evt);
+			}
+		});
+		jMenuBar1.add(jMenu4);
+
+		jMenu6.setText("Save");
+		jMenu6.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				jMenu6MouseClicked(evt);
+			}
+		});
+		jMenuBar1.add(jMenu6);
+
 		setJMenuBar(jMenuBar1);
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -255,6 +323,22 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 
 	private void jMenu1MouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jMenu1MouseClicked
 		this.start_game();
+	}// GEN-LAST:event_jMenu1MouseClicked
+
+	private void jMenu3MouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jMenu1MouseClicked
+		this.load_table("glinder");
+	}// GEN-LAST:event_jMenu1MouseClicked
+
+	private void jMenu4MouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jMenu1MouseClicked
+		this.load_table("LWSS");
+	}// GEN-LAST:event_jMenu1MouseClicked
+
+	private void jMenu5MouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jMenu1MouseClicked
+		this.load_table("LIF");
+	}// GEN-LAST:event_jMenu1MouseClicked
+
+	private void jMenu6MouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jMenu1MouseClicked
+		this.save_table();
 	}// GEN-LAST:event_jMenu1MouseClicked
 
 	/**
@@ -300,6 +384,10 @@ public class gui extends javax.swing.JFrame implements ActionListener {
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JMenu jMenu1;
 	private javax.swing.JMenu jMenu2;
+	private javax.swing.JMenu jMenu3;
+	private javax.swing.JMenu jMenu4;
+	private javax.swing.JMenu jMenu5;
+	private javax.swing.JMenu jMenu6;
 	private javax.swing.JMenuBar jMenuBar1;
 	private javax.swing.JPanel pane;
 	// End of variables declaration//GEN-END:variables

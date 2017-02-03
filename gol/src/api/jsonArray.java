@@ -3,7 +3,7 @@ package api;
 import org.json.*;
 
 public class jsonArray {
-	public static int[][] json_to_generation(String json) throws JSONException {
+	public static int[][] jsonstring_to_generation(String json) throws JSONException {
 		final JSONObject obj = new JSONObject(json);
 		final JSONArray gen = obj.getJSONArray("generation");
 		int x_len = obj.getInt("x_len");
@@ -18,10 +18,10 @@ public class jsonArray {
 		return generation;
 	}
 
-	public static String json_to_generation(int[][] generation) throws JSONException {
+	public static String generation_to_jsonstring(int[][] generation) throws JSONException {
 
 		JSONArray mJSONArray = new JSONArray(generation);
-		return "{" + "\"x_len\": " + generation.length + ", \"y_len\": " + generation[0].length + ", \"generation\": "
+		return "{" + "'x_len': " + generation.length + ", 'y_len': " + generation[0].length + ", 'generation': "
 				+ mJSONArray.toString() + "}";
 	}
 }

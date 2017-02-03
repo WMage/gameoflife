@@ -1,5 +1,7 @@
 package engine;
 
+import org.json.JSONException;
+
 /**
  *
  * @author WMage
@@ -13,6 +15,14 @@ public class generation {
 			throw new Exception("Invalid generation data");
 		}
 		this.gen = generation;
+	}
+	public void parse_json_generation_in(String json) throws JSONException
+	{
+		this.gen = api.jsonArray.jsonstring_to_generation(json);
+	}
+	public String parse_json_nextgeneration_out() throws JSONException
+	{
+		return api.jsonArray.generation_to_jsonstring(this.next_generation());
 	}
 
 	public int[][] next_generation() {
